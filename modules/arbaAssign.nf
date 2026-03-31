@@ -113,13 +113,13 @@ process formatPFamAndArba {
     tuple val(abbrev), val(taxon_id)
 
   output:
-    path '*arbaAndPfamResults.tsv'
+    path 'arbaAndPfamResults.tsv'
 
   script:
     """
     formatAnnotationOutput.pl --arba $arbaAnnotations \
                               --pfam $pfam \
-                              --output ${abbrev}_arbaAndPfamResults.tsv
+                              --output arbaAndPfamResults.tsv
     """
 }
 
