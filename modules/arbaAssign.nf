@@ -4,9 +4,10 @@ nextflow.enable.dsl=2
 process filterInterproByLongestProteinPerGene {
   container = 'veupathdb/arba:1.0.0'
   input:
-    tuple val(abbrev), val(taxon_id)
     path interproResults
-    path proteomes
+    path proteome
+    val taxon_id    
+    val abbrev
 
   output:
     path 'filteredInterproResults.tsv'
@@ -14,8 +15,8 @@ process filterInterproByLongestProteinPerGene {
 
   script:
     """
-    filterInterproByLongest.pl --fasta $proteomes/${abbrev}.fasta \
-                                    --interpro $interproResults/${abbrev}.tsv \
+    filterInterproByLongest.pl --fasta $proteome \
+                                    --interpro $interproResults \
                                     --output filteredInterproResults.tsv
     """
 }
@@ -124,10 +125,13 @@ process formatPFamAndArba {
 
 workflow arbaAssign {
   take:
-    abbrevAndIds
+      interproResults
+      proteome
+      taxonId
+      abbrev
 
   main:
-       filteredInterproResults = filterInterproByLongestProteinPerGene(abbrevAndIds,params.interproResults,params.proteomes)
+      filteredInterproResults = filterInterproByLongestProteinPerGene(interproResults,proteome,taxonId,abbrev)
       lineage = runEDirect(filteredInterproResults)
       arbaAnnotation = assignArbaAnnotation(lineage,params.rulesheet)
       formattedArba = formatArbaOutput(arbaAnnotation)
