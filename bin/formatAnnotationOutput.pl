@@ -44,7 +44,7 @@ while (<$PF>) {
     my ($id, $pf_ids, $pf_descs) = split /\t/;
 
     my @ids   = split /,/, $pf_ids;
-    my @descs = split /,/, $pf_descs;
+    my @descs = split /;;/, $pf_descs;
 
     push @{ $pfam{$id}{desc} }, @descs;
     push @{ $pfam{$id}{ids} },  @ids;
@@ -64,17 +64,17 @@ for my $gene (sort keys %all_ids) {
 
     if (exists $arba{$gene}) {
         # ARBA takes priority
-        $desc = join(", ", @{ $arba{$gene}{desc} });
+        $desc = join(" | ", @{ $arba{$gene}{desc} });
         $ids  = join(",",  @{ $arba{$gene}{ids} });
     }
     else {
         next unless exists $pfam{$gene};
 
         my @descs = @{ $pfam{$gene}{desc} };
-        my $desc_join = join(", ", @descs);
+        my $desc_join = join(" | ", @descs);
 
         # Add "domain-containing protein" ONCE
-        $desc = "$desc_join, domain-containing protein";
+        $desc = "$desc_join | domain-containing protein";
 
         my @ids = @{ $pfam{$gene}{ids} };
         $ids = "Pfam:" . join(",", @ids);

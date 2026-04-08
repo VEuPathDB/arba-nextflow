@@ -76,7 +76,7 @@ foreach my $protein (sort keys %pfamHits) {
 
     # Build comma-separated strings
     my $acc_str  = join(",", @acc_list);
-    my $desc_str = join(",", @desc_list);
+    my $desc_str = join(";;", @desc_list);
 
     # Output: proteinID  accs  descs
     print $OUT "$protein\t$acc_str\t$desc_str\n";
