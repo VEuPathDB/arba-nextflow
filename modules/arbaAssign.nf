@@ -117,10 +117,8 @@ process formatPFamAndArba {
 
   script:
     """
-    identifyUninformative.py --type arba --input $arbaAnnotations --output filtered_arba.tsv
-    identifyUninformative.py --type pfam --input $pfam --output filtered_pfam.tsv
-    formatAnnotationOutput.pl --arba filtered_arba.tsv \
-                              --pfam filtered_pfam.tsv \
+    formatAnnotationOutput.pl --arba $arbaAnnotations \
+                              --pfam $pfam \
                               --output arbaAndPfamResults.tsv
     """
 }
