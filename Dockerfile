@@ -11,6 +11,5 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ADD bin/rulesheet.tsv /bin/
-ADD bin/identifyUninformative.py /bin/
 
 WORKDIR /work
