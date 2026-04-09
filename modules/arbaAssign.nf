@@ -2,7 +2,7 @@
 nextflow.enable.dsl=2
 
 process filterInterproByLongestProteinPerGene {
-  container = 'veupathdb/arba:1.4.0'
+  container = 'veupathdb/arba:1.5.0'
   input:
     path interproResults
     path proteome
@@ -43,7 +43,7 @@ process runEDirect {
 }
 
 process assignArbaAnnotation {
-  container = 'veupathdb/arba:1.4.0'
+  container = 'veupathdb/arba:1.5.0'
   input:
     path lineage
     path filteredInterproResults
@@ -65,7 +65,7 @@ process assignArbaAnnotation {
 }
 
 process formatArbaOutput {
-  container = 'veupathdb/arba:1.4.0'
+  container = 'veupathdb/arba:1.5.0'
   input:
     path arbaNames
     path filteredInterproResults
@@ -83,7 +83,7 @@ process formatArbaOutput {
 }
 
 process pfam {
-  container = 'veupathdb/arba:1.4.0'
+  container = 'veupathdb/arba:1.5.0'
   input:
     path arbaAnnotations
     path filteredInterproResults
@@ -103,7 +103,7 @@ process pfam {
 }
 
 process formatPFamAndArba {
-  container = 'veupathdb/arba:1.4.0'
+  container = 'veupathdb/arba:1.5.0'
 
   publishDir "$params.outputDir", mode: "copy"
 
