@@ -1,31 +1,12 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
-process filterInterproByLongestProteinPerGene {
-  container = 'veupathdb/arba:1.5.0'
-  input:
-    path interproResults
-    path proteome
-    val taxon_id    
-    val abbrev
-
-  output:
-    path 'filteredInterproResults.tsv'
-    tuple val(abbrev), val(taxon_id)
-
-  script:
-    """
-    filterInterproByLongest.pl --fasta $proteome \
-                                    --interpro $interproResults \
-                                    --output filteredInterproResults.tsv
-    """
-}
-
 process runEDirect {
   container = 'veupathdb/edirect:1.0.0'
   input:
     path filteredInterproResults
-    tuple val(abbrev), val(taxon_id)
+    val abbrev
+    val taxon_id
 
   output:
     path 'lineage.txt'
@@ -43,7 +24,7 @@ process runEDirect {
 }
 
 process assignArbaAnnotation {
-  container = 'veupathdb/arba:1.5.0'
+  container = 'veupathdb/arba:1.6.0'
   input:
     path lineage
     path filteredInterproResults
@@ -65,7 +46,7 @@ process assignArbaAnnotation {
 }
 
 process formatArbaOutput {
-  container = 'veupathdb/arba:1.5.0'
+  container = 'veupathdb/arba:1.6.0'
   input:
     path arbaNames
     path filteredInterproResults
@@ -83,7 +64,7 @@ process formatArbaOutput {
 }
 
 process pfam {
-  container = 'veupathdb/arba:1.5.0'
+  container = 'veupathdb/arba:1.6.0'
   input:
     path arbaAnnotations
     path filteredInterproResults
@@ -103,7 +84,7 @@ process pfam {
 }
 
 process formatPFamAndArba {
-  container = 'veupathdb/arba:1.5.0'
+  container = 'veupathdb/arba:1.6.0'
 
   publishDir "$params.outputDir", mode: "copy"
 
@@ -126,13 +107,11 @@ process formatPFamAndArba {
 workflow arbaAssign {
   take:
       interproResults
-      proteome
       taxonId
       abbrev
 
   main:
-      filteredInterproResults = filterInterproByLongestProteinPerGene(interproResults,proteome,taxonId,abbrev)
-      lineage = runEDirect(filteredInterproResults)
+      lineage = runEDirect(interproResults,abbrev,taxonId)
       arbaAnnotation = assignArbaAnnotation(lineage,params.rulesheet)
       formattedArba = formatArbaOutput(arbaAnnotation)
       pfamAndArba = pfam(formattedArba)
