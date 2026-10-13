@@ -9,9 +9,9 @@ process runEDirect {
     val taxon_id
 
   output:
-    path 'lineage.txt'
-    path filteredInterproResults
-    tuple val(abbrev), val(taxon_id)
+    path 'lineage.txt', emit: lineage
+    path filteredInterproResults, emit: interpro
+    tuple val(abbrev), val(taxon_id), emit: organism
 
   script:
     """
@@ -32,9 +32,9 @@ process assignArbaAnnotation {
     path rulesheet
 
   output:
-    path 'names.tsv'
-    path filteredInterproResults
-    tuple val(abbrev), val(taxon_id)
+    path 'names.tsv', emit: names
+    path filteredInterproResults, emit: interpro
+    tuple val(abbrev), val(taxon_id), emit: organism
 
   script:
     """
@@ -53,9 +53,9 @@ process formatArbaOutput {
     tuple val(abbrev), val(taxon_id)
 
   output:
-    path 'arbaAnnotation.tsv'
-    path filteredInterproResults
-    tuple val(abbrev), val(taxon_id)
+    path 'arbaAnnotation.tsv', emit: annotation
+    path filteredInterproResults, emit: interpro
+    tuple val(abbrev), val(taxon_id), emit: organism
 
   script:
     """
@@ -71,9 +71,9 @@ process pfam {
     tuple val(abbrev), val(taxon_id)
 
   output:
-    path 'pfam.tsv'
-    path arbaAnnotations
-    tuple val(abbrev), val(taxon_id)
+    path 'pfam.tsv', emit: pfam
+    path arbaAnnotations, emit: annotation
+    tuple val(abbrev), val(taxon_id), emit: organism
 
   script:
     """
@@ -111,10 +111,10 @@ workflow arbaAssign {
       abbrev
 
   main:
-      lineage = runEDirect(interproResults,abbrev,taxonId)
-      arbaAnnotation = assignArbaAnnotation(lineage,params.rulesheet)
-      formattedArba = formatArbaOutput(arbaAnnotation)
-      pfamAndArba = pfam(formattedArba)
-      formatPFamAndArba(pfamAndArba)
+      runEDirect(interproResults, abbrev, taxonId)
+      assignArbaAnnotation(runEDirect.out.lineage, runEDirect.out.interpro, runEDirect.out.organism, params.rulesheet)
+      formatArbaOutput(assignArbaAnnotation.out.names, assignArbaAnnotation.out.interpro, assignArbaAnnotation.out.organism)
+      pfam(formatArbaOutput.out.annotation, formatArbaOutput.out.interpro, formatArbaOutput.out.organism)
+      formatPFamAndArba(pfam.out.pfam, pfam.out.annotation, pfam.out.organism)
 
 }
