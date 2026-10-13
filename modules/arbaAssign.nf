@@ -2,7 +2,7 @@
 nextflow.enable.dsl=2
 
 process runEDirect {
-  container = 'veupathdb/edirect:1.0.0'
+  container 'veupathdb/edirect:1.0.0'
   input:
     path filteredInterproResults
     val abbrev
@@ -24,7 +24,7 @@ process runEDirect {
 }
 
 process assignArbaAnnotation {
-  container = 'veupathdb/arba:1.6.0'
+  container 'veupathdb/arba:1.6.0'
   input:
     path lineage
     path filteredInterproResults
@@ -46,7 +46,7 @@ process assignArbaAnnotation {
 }
 
 process formatArbaOutput {
-  container = 'veupathdb/arba:1.6.0'
+  container 'veupathdb/arba:1.6.0'
   input:
     path arbaNames
     path filteredInterproResults
@@ -64,7 +64,7 @@ process formatArbaOutput {
 }
 
 process pfam {
-  container = 'veupathdb/arba:1.6.0'
+  container 'veupathdb/arba:1.6.0'
   input:
     path arbaAnnotations
     path filteredInterproResults
@@ -84,7 +84,7 @@ process pfam {
 }
 
 process formatPFamAndArba {
-  container = 'veupathdb/arba:1.6.0'
+  container 'veupathdb/arba:1.6.0'
 
   publishDir "$params.outputDir", mode: "copy"
 
